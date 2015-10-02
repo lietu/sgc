@@ -21,6 +21,8 @@ def static(filename="index.html"):
 
 @app.route('/pick/<name>/<reviews>/<hours_lt>')
 def pick(name, reviews, hours_lt):
+    SteamAPI.set_default_key(settings.STEAM_API_KEY)
+
     user = User(name)
 
     if reviews == "null":
@@ -59,8 +61,6 @@ def pick(name, reviews, hours_lt):
 
 
 if __name__ == "__main__":
-    SteamAPI.set_default_key(settings.STEAM_API_KEY)
-
     if not os.path.exists("cache"):
         print("Cache directory does not exist. (mkdir -p cache)")
         sys.exit(1)
