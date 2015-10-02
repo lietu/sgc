@@ -3,20 +3,23 @@ import json
 import sys
 import os
 
-from bottle import route, run, static_file
+from bottle import run, static_file, Bottle
 
 import settings
 from sgc.steamapi import SteamAPI, CacheManager
 from sgc.steamdata import User
 
 
-@route('/')
-@route('/<filename:re:.*\.(js|html|css)>')
+app = application = Bottle()
+
+
+@app.route('/')
+@app.route('/<filename:re:.*\.(js|html|css)>')
 def static(filename="index.html"):
     return static_file(filename, root='static')
 
 
-@route('/pick/<name>/<reviews>/<hours_lt>')
+@app.route('/pick/<name>/<reviews>/<hours_lt>')
 def pick(name, reviews, hours_lt):
     user = User(name)
 
@@ -62,4 +65,4 @@ if __name__ == "__main__":
         print("Cache directory does not exist. (mkdir -p cache)")
         sys.exit(1)
 
-    run(host=settings.HOST, port=settings.PORT)
+    run(app=app, host=settings.HOST, port=settings.PORT)
