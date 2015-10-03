@@ -5,6 +5,8 @@ Chooses Steam games for you to play.
 
 Written with [Bottle](http://bottlepy.org/) and [Vanilla JS](http://vanilla-js.com/).
 
+Licensed under MIT and new BSD licenses, more details in `LICENSE.md`.
+
 
 ## Absolute minimal setup requirements
 
