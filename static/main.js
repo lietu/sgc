@@ -34,6 +34,7 @@
         review: [],
         hours: [],
         logo: [],
+        appid: [],
 
         /**
          * Load up elements to cache, set up event listeners
@@ -53,6 +54,7 @@
             this.review = toArray(document.querySelectorAll(".review"));
             this.hours = toArray(document.querySelectorAll(".hours"));
             this.logo = toArray(document.querySelectorAll(".logo"));
+            this.appid = toArray(document.querySelectorAll(".appid"));
 
             this.loader = document.querySelector(".loader");
         },
@@ -159,6 +161,8 @@
                 for (var i = 0, count = elements.length; i < count; i+=1) {
                     if (key === "logo") {
                         elements[i].src = data[key];
+                    } else if (key === "appid") {
+                        elements[i].href = "steam://run/" + data[key] + "/";
                     } else {
                         elements[i].innerText = String(data[key]);
                     }

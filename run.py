@@ -45,6 +45,7 @@ def pick(name, reviews, hours_lt):
     game = choice(filtered)
 
     response = {
+        "appid": game.app_id,
         "games": user.game_count,
         "matches": len(filtered),
         "name": name,
