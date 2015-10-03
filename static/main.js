@@ -190,6 +190,10 @@
 
         _setChoice: function (data) {
             for (var key in data) {
+                if (!this[key]) {
+                    continue;
+                }
+                
                 log("Setting data for " + key);
                 var elements = this[key];
                 for (var i = 0, count = elements.length; i < count; i += 1) {
