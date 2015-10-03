@@ -9,6 +9,7 @@ import settings
 from sgc.errors import SGCError, Wrapped
 from sgc.steamapi import SteamAPI, CacheManager
 from sgc.steamdata import User
+from sgc.analytics import AnalyticsManager
 
 
 app = application = Bottle()
@@ -24,6 +25,8 @@ def static(filename="index.html"):
 def pick(name, reviews, hours_lt):
     try:
         SteamAPI.set_default_key(settings.STEAM_API_KEY)
+
+        AnalyticsManager.write("search", name, reviews, hours_lt)
 
         user = User(name)
 
@@ -45,6 +48,8 @@ def pick(name, reviews, hours_lt):
         )
 
         game = choice(filtered)
+
+        AnalyticsManager.write("recommendation", game.app_id, game.name, game.review, game.hours, game.review)
 
         response = {
             "type": "success",
@@ -74,6 +79,10 @@ def pick(name, reviews, hours_lt):
 if __name__ == "__main__":
     if not os.path.exists("cache"):
         print("Cache directory does not exist. (mkdir -p cache)")
+        sys.exit(1)
+
+    if not os.path.exists("analytics"):
+        print("Analytics directory does not exist. (mkdir -p analytics)")
         sys.exit(1)
 
     run(app=app, host=settings.HOST, port=settings.PORT)
