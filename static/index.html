@@ -6,7 +6,8 @@
 
     <title>Steam Game Chooser</title>
 
-    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
+    <link rel="stylesheet"
+          href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
     <style type="text/css">
         body, html {
             color: #333;
@@ -46,9 +47,14 @@
             font-weight: bold;
         }
 
-        input.error {
+        .error {
+            display: none;
             border: 1px solid #cc1137 !important;
             background-color: rgba(204, 17, 55, 0.04);
+        }
+
+        .error.visible {
+            display: block;
         }
 
         span.name {
@@ -84,79 +90,103 @@
         reviews and <span class="name"></span> has <span class="hours"></span>
         hours in it.</p>
 
-    <a class="appid pure-button pure-button-primary" href="">Launch in Steam</a>
+    <a class="appid pure-button pure-button-primary" href="">Launch in
+        Steam</a>
 
-    <p><span class="name"></span> has <span class="games"></span> games, of which <span
-            class="matches"></span> matched search parameters.</p>
+    <p><span class="name"></span> has <span class="games"></span> games, of
+        which <span
+                class="matches"></span> matched search parameters.</p>
 </section>
 <section class="loader box">
     <p>Choosing game...</p>
-    <p>This might take a while, maybe even a long one (i.e. couple of minutes), if we don't have the review information for many of your games in cache.</p>
+
+    <p>This might take a while, maybe even a long one (i.e. couple of minutes),
+        if we don't have the review information for many of your games in
+        cache.</p>
+</section>
+<section class="error-message error box">
+    <p class="message"></p>
 </section>
 <section class="chooser">
-    <h1>Choose a <a href="http://store.steampowered.com">Steam</a> game to play</h1>
+    <h1>Choose a <a href="http://store.steampowered.com">Steam</a> game to play
+    </h1>
+
     <form id="chooser" class="pure-form pure-form-aligned">
         <fieldset>
             <div class="pure-control-group">
                 <label for="name">Username</label>
-                <input type="text" id="name" name="name" placeholder="Steam username" />
+                <input type="text" id="name" name="name"
+                       placeholder="Steam username"/>
             </div>
 
             <div class="pure-control-group">
                 <label for="hours_lt">Max hours</label>
                 <input type="number" id="hours_lt" name="hours_lt"
-                       placeholder="Max hours in game" value="10" />
+                       placeholder="Max hours in game" value="10"/>
             </div>
 
             <div class="pure-controls">
                 <label for="reviews_7">
-                    <input type="checkbox" id="reviews_7" name="reviews" value="7" checked />
+                    <input type="checkbox" id="reviews_7" name="reviews"
+                           value="7" checked/>
                     Overwhelmingly Positive
                 </label>
 
                 <label for="reviews_6">
-                    <input type="checkbox" id="reviews_6" name="reviews" value="6" checked />
+                    <input type="checkbox" id="reviews_6" name="reviews"
+                           value="6" checked/>
                     Very Positive
                 </label>
 
                 <label for="reviews_5">
-                    <input type="checkbox" id="reviews_5" name="reviews" value="5" />
+                    <input type="checkbox" id="reviews_5" name="reviews"
+                           value="5"/>
                     Positive
                 </label>
 
                 <label for="reviews_4">
-                    <input type="checkbox" id="reviews_4" name="reviews" value="4" />
+                    <input type="checkbox" id="reviews_4" name="reviews"
+                           value="4"/>
                     Mostly Positive
                 </label>
 
                 <label for="reviews_3">
-                    <input type="checkbox" id="reviews_3" name="reviews" value="3" />
+                    <input type="checkbox" id="reviews_3" name="reviews"
+                           value="3"/>
                     Mixed
                 </label>
 
                 <label for="reviews_2">
-                    <input type="checkbox" id="reviews_2" name="reviews" value="2" />
+                    <input type="checkbox" id="reviews_2" name="reviews"
+                           value="2"/>
                     Mostly Negative
                 </label>
 
                 <label for="reviews_1">
-                    <input type="checkbox" id="reviews_1" name="reviews" value="1" />
+                    <input type="checkbox" id="reviews_1" name="reviews"
+                           value="1"/>
                     Negative
                 </label>
 
                 <label for="reviews_0">
-                    <input type="checkbox" id="reviews_0" name="reviews" value="0" />
+                    <input type="checkbox" id="reviews_0" name="reviews"
+                           value="0"/>
                     Very Negative
                 </label>
 
-                <button type="submit" class="pure-button pure-button-primary">Choose a game</button>
+                <button type="submit" class="pure-button pure-button-primary">
+                    Choose a game
+                </button>
             </div>
         </fieldset>
     </form>
 </section>
 <div class="footer">
-    <p>Powered by <a href="https://github.com/lietu/sgc">Steam Game Chooser</a> by <a href="http://lietu.net">Janne Enberg aka. Lietu.</a></p>
-    <p>All rights reserved. No promises. Don't break my shit. Yadi yadi yada.</p>
+    <p>Powered by <a href="https://github.com/lietu/sgc">Steam Game Chooser</a>
+        by <a href="http://lietu.net">Janne Enberg aka. Lietu.</a></p>
+
+    <p>All rights reserved. No promises. Don't break my shit. Yadi yadi
+        yada.</p>
 </div>
 <script type="text/javascript" src="main.js"></script>
 </body>

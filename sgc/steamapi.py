@@ -5,6 +5,7 @@ from lxml import etree, html
 import requests
 
 from sgc.cache import CacheManager
+from sgc.errors import UserNotFound, APIError
 
 
 ROOT_URL = "http://api.steampowered.com"
@@ -91,7 +92,12 @@ class GetOwnedGames(SteamAPI):
             "include_appinfo": 1,
         })
 
-        return json.loads(data)
+        try:
+            response = json.loads(data)
+        except ValueError as e:
+            raise APIError()
+
+        return response
 
 
 class GetSteamID64(CachedAPI):
@@ -101,6 +107,9 @@ class GetSteamID64(CachedAPI):
         data = self._fetch(name)
         tree = etree.fromstring(data)
         ids = tree.xpath('//steamID64//text()')
+
+        if not ids:
+            raise UserNotFound()
 
         return "".join(ids)
 

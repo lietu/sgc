@@ -6,6 +6,7 @@ import os
 from bottle import run, static_file, Bottle
 
 import settings
+from sgc.errors import SGCError, Wrapped
 from sgc.steamapi import SteamAPI, CacheManager
 from sgc.steamdata import User
 
@@ -21,42 +22,51 @@ def static(filename="index.html"):
 
 @app.route('/pick/<name>/<reviews>/<hours_lt>')
 def pick(name, reviews, hours_lt):
-    SteamAPI.set_default_key(settings.STEAM_API_KEY)
+    try:
+        SteamAPI.set_default_key(settings.STEAM_API_KEY)
 
-    user = User(name)
+        user = User(name)
 
-    if reviews == "null":
-        reviews = None
-    else:
-        reviews = [
-            int(i) for i in reviews.split(",")
-        ]
+        if reviews == "null":
+            reviews = None
+        else:
+            reviews = [
+                int(i) for i in reviews.split(",")
+            ]
 
-    if hours_lt == "null":
-        hours_lt = None
-    else:
-        hours_lt = int(hours_lt)
+        if hours_lt == "null":
+            hours_lt = None
+        else:
+            hours_lt = int(hours_lt)
 
-    filtered = user.filtered_games(
-        reviews=reviews,
-        hours_lt=hours_lt
-    )
+        filtered = user.filtered_games(
+            reviews=reviews,
+            hours_lt=hours_lt
+        )
 
-    game = choice(filtered)
+        game = choice(filtered)
 
-    response = {
-        "appid": game.app_id,
-        "games": user.game_count,
-        "matches": len(filtered),
-        "name": name,
-        "game": game.name,
-        "review": game.review,
-        "hours": game.hours,
-        "logo": game.logo
-    }
+        response = {
+            "type": "success",
+            "appid": game.app_id,
+            "games": user.game_count,
+            "matches": len(filtered),
+            "name": name,
+            "game": game.name,
+            "review": game.review,
+            "hours": game.hours,
+            "logo": game.logo
+        }
 
-    user.save_to_cache()
-    CacheManager.write_to_cache()
+        user.save_to_cache()
+        CacheManager.write_to_cache()
+
+    except SGCError as e:
+        response = e.to_response()
+
+    # except Exception as e:
+    #     wrapped = Wrapped(e)
+    #     response = wrapped.to_response()
 
     return json.dumps(response)
 

@@ -57,6 +57,9 @@
             this.logo = toArray(document.querySelectorAll(".logo"));
             this.appid = toArray(document.querySelectorAll(".appid"));
 
+            this.message = toArray(document.querySelectorAll(".message"));
+
+            this.errormessage = document.querySelector(".error-message");
             this.loader = document.querySelector(".loader");
 
             if (document.activeElement && ["input", "button"].indexOf(document.activeElement.tagName) === -1) {
@@ -134,6 +137,7 @@
             log("Fetching " + url);
 
             this.choice.classList.remove("fetched");
+            this.errormessage.classList.remove("visible");
             this.loader.classList.add("loading");
 
             var req = new XMLHttpRequest();
@@ -152,11 +156,36 @@
                     var response = JSON.parse(req.responseText);
                     log(response);
 
-                    this._setChoice(response);
+                    log("Result was: " + response.type);
+
+                    if (response.type === "success") {
+                        this._setChoice(response);
+                    } else {
+                        this._setError(response);
+                    }
                 } else {
                     log("Response: " + req.responseText)
                 }
             }.bind(this);
+        },
+
+        _setError: function (data) {
+            for (var key in data) {
+                if (!this[key]) {
+                    continue;
+                }
+
+                log("Setting data for " + key);
+
+                var elements = this[key];
+                for (var i = 0, count = elements.length; i < count; i += 1) {
+                    elements[i].innerText = String(data[key]);
+                }
+            }
+
+            this.loader.classList.remove("loading");
+            this.choice.classList.remove("fetched");
+            this.errormessage.classList.add("visible");
         },
 
         _setChoice: function (data) {
@@ -175,6 +204,7 @@
             }
 
             this.loader.classList.remove("loading");
+            this.errormessage.classList.remove("visible");
             this.choice.classList.add("fetched");
         }
     };
