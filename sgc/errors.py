@@ -19,7 +19,7 @@ class Wrapped(SGCError):
         }
 
 class UserNotFound(SGCError):
-    MESSAGE = "User not found"
+    MESSAGE = "User not found. Your username is e.g. on the Steam community URL https://steamcommunity.com/id/USERNAME"
 
 
 class APIError(SGCError):
