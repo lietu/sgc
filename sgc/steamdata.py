@@ -107,12 +107,13 @@ class Game(object):
     REVIEW_LEVELS = {
         '': -1,
         'Very Negative': 0,
-        'Mostly Negative': 1,
-        'Mixed': 2,
-        'Mostly Positive': 3,
-        'Positive': 4,
-        'Very Positive': 5,
-        'Overwhelmingly Positive': 6
+        'Negative': 1,
+        'Mostly Negative': 2,
+        'Mixed': 3,
+        'Mostly Positive': 4,
+        'Positive': 5,
+        'Very Positive': 6,
+        'Overwhelmingly Positive': 7
     }
 
     def __init__(self, data, review=None):
