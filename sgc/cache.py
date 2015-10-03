@@ -27,3 +27,5 @@ class CacheManager(object):
 
             with open("cache/{}".format(key), 'wb') as f:
                 f.write(pickled)
+
+        cls.save_queue = {}
