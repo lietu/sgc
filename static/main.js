@@ -1,4 +1,4 @@
-(function() {
+(function () {
     "use strict";
 
     /**
@@ -6,14 +6,14 @@
      * @param items
      * @returns {Array.<T>}
      */
-    var toArray = function(items) {
+    var toArray = function (items) {
         return Array.prototype.slice.call(items);
     };
 
     /**
      * Log something if console is available
      */
-    var log = function() {
+    var log = function () {
         if (typeof console !== "undefined" && console.log) {
             console.log.apply(console, toArray(arguments));
         }
@@ -39,11 +39,12 @@
         /**
          * Load up elements to cache, set up event listeners
          */
-        start: function() {
+        start: function () {
             log("Starting up SGC");
 
             this.form = document.querySelector("form#chooser");
             this.fields = toArray(document.querySelectorAll("form input"));
+            this.username = document.querySelector("form #name");
             this.form.addEventListener("submit", this._onSubmit.bind(this));
 
             this.choice = document.querySelector(".choice");
@@ -57,6 +58,10 @@
             this.appid = toArray(document.querySelectorAll(".appid"));
 
             this.loader = document.querySelector(".loader");
+
+            if (document.activeElement && ["input", "button"].indexOf(document.activeElement.tagName) === -1) {
+                this.username.focus();
+            }
         },
 
         /**
@@ -65,7 +70,7 @@
          * @param {Event} event
          * @private
          */
-        _onSubmit: function(event) {
+        _onSubmit: function (event) {
             log("Form submitted");
             var form_data = {
                 name: null,
@@ -75,7 +80,7 @@
 
             var errors = false;
 
-            this.fields.forEach(function(field) {
+            this.fields.forEach(function (field) {
                 if (field.name === "reviews") {
                     if (field.checked) {
                         form_data.reviews.push(field.value);
@@ -123,7 +128,7 @@
             event.preventDefault();
         },
 
-        _getChoice: function(data) {
+        _getChoice: function (data) {
             var url = "/pick/" + data.name + "/" + data.reviews + "/" + data.hours_lt;
 
             log("Fetching " + url);
@@ -137,8 +142,8 @@
             req.send();
         },
 
-        _getChoiceHandler: function(req) {
-            return function(event) {
+        _getChoiceHandler: function (req) {
+            return function (event) {
                 log("Load complete");
                 log(req);
                 log("Response status was " + req.status);
@@ -154,11 +159,11 @@
             }.bind(this);
         },
 
-        _setChoice: function(data) {
+        _setChoice: function (data) {
             for (var key in data) {
                 log("Setting data for " + key);
                 var elements = this[key];
-                for (var i = 0, count = elements.length; i < count; i+=1) {
+                for (var i = 0, count = elements.length; i < count; i += 1) {
                     if (key === "logo") {
                         elements[i].src = data[key];
                     } else if (key === "appid") {
