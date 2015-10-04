@@ -180,6 +180,7 @@
                 var elements = this[key];
                 for (var i = 0, count = elements.length; i < count; i += 1) {
                     elements[i].innerText = String(data[key]);
+                    elements[i].textContent = String(data[key]);
                 }
             }
 
@@ -203,6 +204,7 @@
                         elements[i].href = "steam://run/" + data[key] + "/";
                     } else {
                         elements[i].innerText = String(data[key]);
+                        elements[i].textContent = String(data[key]);
                     }
                 }
             }
