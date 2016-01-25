@@ -2,6 +2,19 @@ from sgc.cache import CacheManager
 from sgc.steamapi import GetSteamID64, GetOwnedGames, GetAppData
 
 
+def games_to_list(games):
+    """
+    Convert a list of Game objects to a list of objects for list API
+
+    :param Game[] games:
+    :return dict[]:
+    """
+    return [
+        game.to_list_item()
+        for game in games
+    ]
+
+
 class User(object):
     def __init__(self, name):
         self.name = name
@@ -119,6 +132,15 @@ class Game(object):
     def __init__(self, data, review=None):
         self._data = data
         self._review = review
+
+    def to_list_item(self):
+        return {
+            "name": self.name,
+            "logo": self.logo,
+            "app_id": self.app_id,
+            "hours": self.hours,
+            "review": self.review,
+        }
 
     @property
     def cache_data(self):

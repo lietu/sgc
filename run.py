@@ -8,7 +8,7 @@ from bottle import run, static_file, Bottle
 import settings
 from sgc.errors import SGCError, Wrapped
 from sgc.steamapi import SteamAPI, CacheManager
-from sgc.steamdata import User
+from sgc.steamdata import User, games_to_list
 from sgc.analytics import AnalyticsManager
 
 
@@ -52,7 +52,7 @@ def pick(name, reviews, hours_lt):
         AnalyticsManager.write("recommendation", game.app_id, game.name, game.review, game.hours, game.review)
 
         response = {
-            "type": "success",
+            "type": "recommendation",
             "appid": game.app_id,
             "games": user.game_count,
             "matches": len(filtered),
@@ -61,6 +61,53 @@ def pick(name, reviews, hours_lt):
             "review": game.review,
             "hours": game.hours,
             "logo": game.logo
+        }
+
+        user.save_to_cache()
+        CacheManager.write_to_cache()
+
+    except SGCError as e:
+        response = e.to_response()
+
+    # except Exception as e:
+    #     wrapped = Wrapped(e)
+    #     response = wrapped.to_response()
+
+    return json.dumps(response)
+
+
+@app.route('/list/<name>/<reviews>/<hours_lt>')
+def list(name, reviews, hours_lt):
+    try:
+        SteamAPI.set_default_key(settings.STEAM_API_KEY)
+
+        AnalyticsManager.write("list", name, reviews, hours_lt)
+
+        user = User(name)
+
+        if reviews == "null":
+            reviews = None
+        else:
+            reviews = [
+                int(i) for i in reviews.split(",")
+            ]
+
+        if hours_lt == "null":
+            hours_lt = None
+        else:
+            hours_lt = int(hours_lt)
+
+        filtered = user.filtered_games(
+            reviews=reviews,
+            hours_lt=hours_lt
+        )
+
+        response = {
+            "type": "list",
+            "games": user.game_count,
+            "matches": len(filtered),
+            "name": name,
+            "list": games_to_list(filtered)
         }
 
         user.save_to_cache()

@@ -24,6 +24,10 @@
      */
     var SGC = {
         form: null,
+        listButton: null,
+        listSection: null,
+        listTemplate: null,
+        gameTemplate: null,
         fields: [],
 
         choice: null,
@@ -35,6 +39,8 @@
         hours: [],
         logo: [],
         appid: [],
+        listData: {},
+        listSort: "name",
 
         /**
          * Load up elements to cache, set up event listeners
@@ -43,9 +49,11 @@
             log("Starting up SGC");
 
             this.form = document.querySelector("form#chooser");
+            this.listButton = document.querySelector("button#list");
+            this.listSection = document.querySelector("section.list");
+            this.gameTemplate = document.querySelector("#game-template");
             this.fields = toArray(document.querySelectorAll("form input"));
             this.username = document.querySelector("form #name");
-            this.form.addEventListener("submit", this._onSubmit.bind(this));
 
             this.choice = document.querySelector(".choice");
             this.name = toArray(document.querySelectorAll(".name"));
@@ -65,16 +73,12 @@
             if (document.activeElement && ["input", "button"].indexOf(document.activeElement.tagName) === -1) {
                 this.username.focus();
             }
+
+            this.form.addEventListener("submit", this._onSubmit.bind(this));
+            this.listButton.addEventListener("click", this._onList.bind(this));
         },
 
-        /**
-         * Triggered when "Choose a game" is clicked
-         *
-         * @param {Event} event
-         * @private
-         */
-        _onSubmit: function (event) {
-            log("Form submitted");
+        _getFormData: function () {
             var form_data = {
                 name: null,
                 reviews: [],
@@ -116,16 +120,53 @@
             });
 
             if (!errors) {
-                log("No errors.");
-                log("Data was:", form_data);
-
-                var data = {
+                return {
                     name: form_data.name,
                     reviews: (form_data.reviews ? form_data.reviews.join(",") : "null"),
                     hours_lt: (form_data.hours_lt ? form_data.hours_lt : "null")
                 };
+            } else {
+                return null;
+            }
+        },
+
+        /**
+         * Triggered when "Choose a game" is clicked
+         *
+         * @param {Event} event
+         * @private
+         */
+        _onSubmit: function (event) {
+            log("Choose a game");
+
+            var data = this._getFormData();
+
+            if (data !== null) {
+                log("No errors.");
+                log("Data was:", data);
 
                 this._getChoice(data);
+            }
+
+            event.preventDefault();
+        },
+
+        /**
+         * Triggered when "Show list" is clicked
+         *
+         * @param {Event} event
+         * @private
+         */
+        _onList: function (event) {
+            log("Show list");
+
+            var data = this._getFormData();
+
+            if (data !== null) {
+                log("No errors.");
+                log("Data was:", data);
+
+                this._getList(data);
             }
 
             event.preventDefault();
@@ -141,12 +182,26 @@
             this.loader.classList.add("loading");
 
             var req = new XMLHttpRequest();
-            req.addEventListener("load", this._getChoiceHandler(req));
+            req.addEventListener("load", this._getRequestHandler(req));
             req.open("GET", url);
             req.send();
         },
 
-        _getChoiceHandler: function (req) {
+        _getList: function (data) {
+            var url = "/list/" + data.name + "/" + data.reviews + "/" + data.hours_lt;
+
+            log("Fetching " + url);
+
+            this.listSection.classList.add("hidden");
+            this.errormessage.classList.remove("visible");
+
+            var req = new XMLHttpRequest();
+            req.addEventListener("load", this._getRequestHandler(req));
+            req.open("GET", url);
+            req.send();
+        },
+
+        _getRequestHandler: function (req) {
             return function (event) {
                 log("Load complete");
                 log(req);
@@ -158,8 +213,11 @@
 
                     log("Result was: " + response.type);
 
-                    if (response.type === "success") {
+                    if (response.type === "recommendation") {
                         this._setChoice(response);
+                    } else if (response.type === "list") {
+                        this.listData = response;
+                        this._buildList();
                     } else {
                         this._setError(response);
                     }
@@ -179,6 +237,9 @@
 
                 var elements = this[key];
                 for (var i = 0, count = elements.length; i < count; i += 1) {
+                    if (elements[i].tagName === "IMG") {
+                        continue;
+                    }
                     elements[i].innerText = String(data[key]);
                     elements[i].textContent = String(data[key]);
                 }
@@ -189,12 +250,105 @@
             this.errormessage.classList.add("visible");
         },
 
+        _capitalize: function (str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        },
+
+        _setSort: function (event) {
+            var text;
+            if (event.target.innerText) {
+                text = event.target.innerText;
+            } else {
+                text = event.target.textContent;
+            }
+
+            var key = text.toLowerCase().trim().replace(/ .*$/, "");
+
+            log(key);
+
+            if (key != "") {
+                if (key == this.listSort) {
+                    key = "!" + key;
+                }
+
+                log("Sorting is now by " + key);
+
+                this.listSort = key;
+                this._buildList();
+            }
+        },
+
+        _buildList: function () {
+            var i, count;
+
+            if (!this.listTemplate) {
+                this.listTemplate = Handlebars.compile(this.gameTemplate.innerHTML);
+            }
+
+            var key = this.listSort;
+            var reversed = false;
+            if (key[0] === "!") {
+                reversed = true;
+                key = key.substr(1);
+            }
+
+            var keys = ["name", "hours", "review"];
+            for (i = 0, count = keys.length; i < count; i += 1) {
+                var sortKey = this._capitalize(keys[i]);
+
+                log(sortKey, key);
+                if (sortKey.toLowerCase() === key) {
+                    if (!reversed) {
+                        this.listData["sortBy" + sortKey] = true;
+                        this.listData["sortBy" + sortKey + "Rev"] = false;
+                    } else {
+                        this.listData["sortBy" + sortKey] = false;
+                        this.listData["sortBy" + sortKey + "Rev"] = true;
+                    }
+                } else {
+                    this.listData["sortBy" + sortKey] = false;
+                    this.listData["sortBy" + sortKey + "Rev"] = false;
+                }
+            }
+
+            log(this.listData);
+
+            this.listData.name = this._capitalize(this.listData.name);
+
+            this.listData.list.sort(function (a, b) {
+                var first = a[key];
+                var second = b[key];
+
+                if (reversed) {
+                    var tmp = second;
+                    second = first;
+                    first = tmp;
+                }
+
+                if (first < second) {
+                    return -1;
+                } else if (first > second) {
+                    return 1;
+                } else {
+                    return 0;
+                }
+            });
+
+            this.listSection.innerHTML = this.listTemplate(this.listData);
+
+            this.listSection.classList.remove("hidden");
+            var headers = this.listSection.querySelectorAll("th");
+            for (i = 0, count = headers.length; i < count; i += 1) {
+                headers[i].addEventListener("click", this._setSort.bind(this));
+            }
+        },
+
         _setChoice: function (data) {
             for (var key in data) {
                 if (!this[key]) {
                     continue;
                 }
-                
+
                 log("Setting data for " + key);
                 var elements = this[key];
                 for (var i = 0, count = elements.length; i < count; i += 1) {
@@ -215,5 +369,6 @@
         }
     };
 
+    window.SGC = SGC;
     SGC.start();
 })();

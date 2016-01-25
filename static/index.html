@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>Steam Game Chooser</title>
-    <meta name="description" content="Steam Game Chooser picks random Steam games from your Steam game library for you to play. You can limit the choices based on average reviews and the amount of hours you have in the game." />
+    <meta name="description"
+          content="Steam Game Chooser picks random Steam games from your Steam game library for you to play. You can limit the choices based on average reviews and the amount of hours you have in the game."/>
 
     <link rel="stylesheet"
           href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
@@ -91,6 +92,22 @@
 
             font-size: 12px;
             text-align: center;
+        }
+
+        .list {
+            max-width: 765px;
+        }
+
+        .list table {
+            margin-top: 24px;
+        }
+
+        .list table th {
+            white-space: nowrap;
+        }
+
+        .hidden {
+            display: none;
         }
 
     </style>
@@ -187,12 +204,19 @@
                     Very Negative
                 </label>
 
-                <button type="submit" class="pure-button pure-button-primary">
+                <button type="submit" id="choose"
+                        class="pure-button pure-button-primary">
                     Choose a game
+                </button>
+
+                <button type="button" id="list" class="pure-button">
+                    Show list
                 </button>
             </div>
         </fieldset>
     </form>
+</section>
+<section class="list hidden">
 </section>
 <div class="footer">
     <p>Powered by <a href="https://github.com/lietu/sgc">Steam Game Chooser</a>
@@ -201,8 +225,68 @@
     <p>All rights reserved. No promises. Don't break my shit. Yadi yadi
         yada.</p>
 
-    <p>Yes, I collect analytics of the use (visits, searches, recommendations, yadi yadi yada). I might do something with it in the future.</p>
+    <p>Yes, I collect analytics of the use (visits, searches, recommendations,
+        yadi yadi yada). I might do something with it in the future.</p>
 </div>
+<script id="game-template" type="text/x-handlebars-template">
+    <h2>List of games</h2>
+    <span>{{name}} had {{matches}} games out of {{games}} that matched the selections. </span>
+    <table class="pure-table pure-table-horizontal pure-table-striped">
+        <thead>
+        <tr>
+            <th></th>
+            <th>
+                Name
+                {{#if sortByName }}
+                &#9650;
+                {{else}}
+                    {{#if sortByNameRev }}
+                    &#9660;
+                    {{/if}}
+                {{/if}}
+            </th>
+            <th>
+                Hours
+                {{#if sortByHours }}
+                &#9650;
+                {{else}}
+                    {{#if sortByHoursRev }}
+                    &#9660;
+                    {{/if}}
+                {{/if}}
+            </th>
+            <th>
+                Review
+                {{#if sortByReview }}
+                &#9650;
+                {{else}}
+                    {{#if sortByReviewRev }}
+                    &#9660;
+                    {{/if}}
+                {{/if}}
+            </th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#each list as |game|}}
+        <tr>
+            <td><img src="{{game.logo}}"/></td>
+            <td>{{game.name}}</td>
+            <td>{{game.hours}}</td>
+            <td>{{game.review}}</td>
+            <td>
+                <a class="pure-button pure-button-primary"
+                   href="steam://run/{{game.app_id}}/">
+                    Launch
+                </a>
+            </td>
+        </tr>
+        {{/each}}
+        </tbody>
+    </table>
+</script>
+<script type="text/javascript" src="handlebars-v4.0.5.js"></script>
 <script type="text/javascript" src="main.js"></script>
 </body>
 </html>
