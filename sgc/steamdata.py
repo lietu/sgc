@@ -144,7 +144,7 @@ class Game(object):
 
     @property
     def hours(self):
-        return self._data["playtime_forever"]
+        return self._data["playtime_forever"] / 60
 
     @property
     def review(self):
