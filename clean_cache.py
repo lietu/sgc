@@ -20,7 +20,6 @@ CACHE_BASE = os.path.join(CURRENT_DIR, "cache")
 
 USER_PATTERNS = [
     "GetOwnedGames-*",
-    "GetSteamID64-*",
     "User-*"
 ]
 
