@@ -17,6 +17,10 @@
             margin: 16px;
         }
 
+        a, a:active, a:visited {
+            color: rgb(13, 72, 134);
+        }
+
         section {
             margin: 0 auto;
         }
@@ -106,6 +110,15 @@
             white-space: nowrap;
         }
 
+        .list td:last-child {
+            text-align: center;
+        }
+
+        .list td:last-child p {
+            margin: 8px 0 0 0;
+            line-height: 12px;
+        }
+
         .hidden {
             display: none;
         }
@@ -120,8 +133,10 @@
         reviews and <span class="name"></span> has <span class="hours"></span>
         hours in it.</p>
 
-    <a class="appid pure-button pure-button-primary" href="">Launch in
+    </p><a class="appid pure-button pure-button-primary" href="">Launch in
         Steam</a>
+
+    <p><a class="store" href="">Open store page</a></p>
 
     <p><span class="name"></span> has <span class="games"></span> games, of
         which <span
@@ -280,6 +295,9 @@
                    href="steam://run/{{game.app_id}}/">
                     Launch
                 </a>
+                <p><a href="http://store.steampowered.com/app/{{game.app_id}}/">
+                    Store
+                </a></p>
             </td>
         </tr>
         {{/each}}

@@ -39,6 +39,7 @@
         hours: [],
         logo: [],
         appid: [],
+        store: [],
         listData: {},
         listSort: "name",
 
@@ -64,6 +65,7 @@
             this.hours = toArray(document.querySelectorAll(".hours"));
             this.logo = toArray(document.querySelectorAll(".logo"));
             this.appid = toArray(document.querySelectorAll(".appid"));
+            this.store = toArray(document.querySelectorAll(".store"));
 
             this.message = toArray(document.querySelectorAll(".message"));
 
@@ -344,6 +346,7 @@
         },
 
         _setChoice: function (data) {
+            var i, count;
             for (var key in data) {
                 if (!this[key]) {
                     continue;
@@ -351,7 +354,7 @@
 
                 log("Setting data for " + key);
                 var elements = this[key];
-                for (var i = 0, count = elements.length; i < count; i += 1) {
+                for (i = 0, count = elements.length; i < count; i += 1) {
                     if (key === "logo") {
                         elements[i].src = data[key];
                     } else if (key === "appid") {
@@ -359,6 +362,12 @@
                     } else {
                         elements[i].innerText = String(data[key]);
                         elements[i].textContent = String(data[key]);
+                    }
+                }
+
+                if (key === "appid") {
+                    for (i = 0, count = this.store.length; i < count; i += 1) {
+                        this.store[i].href = "http://store.steampowered.com/app/" + data[key] + "/";
                     }
                 }
             }
